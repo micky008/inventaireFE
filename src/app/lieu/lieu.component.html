@@ -1,0 +1,25 @@
+<p-table [value]="lieux" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
+    <ng-template pTemplate="header">
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Update</th>
+            <th>Delete</th>
+
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product let-rowIndex="rowIndex">
+        <tr>
+            <td>{{product.uuid}}</td>
+            <td>{{product.lieu}}</td>
+            @if(rowIndex == 0) {
+            <td></td>
+            <td></td>
+            }@else{
+            <td><span class="pointer pi pi-file-edit"></span></td>
+            <td><span class="pointer pi pi-trash" (click)="delete(product)"></span></td>
+            }
+
+        </tr>
+    </ng-template>
+</p-table>

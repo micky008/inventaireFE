@@ -1,0 +1,6 @@
+<p-button icon="pi pi-bars" [rounded]="true" [text]="true" [raised]="true"  (onClick)="showBurgerMenu = !showBurgerMenu"></p-button>
+<p-sidebar [(visible)]="showBurgerMenu">
+  <p-menu [model]="items">
+  </p-menu>
+</p-sidebar>
+<router-outlet></router-outlet>
