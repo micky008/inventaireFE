@@ -1,25 +1,35 @@
-<p-table [value]="lieux" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
+<p-table [value]="lieux" styleClass="p-datatable-striped">
     <ng-template pTemplate="header">
         <tr>
-            <th>ID</th>
             <th>Nom</th>
-            <th>Update</th>
             <th>Delete</th>
-
+            <th><p-button icon="pi pi-plus" label="Ajouter" (click)="op.toggle($event)"></p-button></th>
         </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-product let-rowIndex="rowIndex">
+    <ng-template pTemplate="body" let-lieu let-rowIndex="rowIndex">
         <tr>
-            <td>{{product.uuid}}</td>
-            <td>{{product.lieu}}</td>
+            <td>
+                <p-inplace [closable]="true" closeIcon="pi pi-save" (onDeactivate)="update(lieu)">
+                    <ng-template pTemplate="display">
+                        <span pTooltip="Click pour editer">{{lieu.lieu}}</span>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+                        <input #newLieuUpdate type="text" (change)="lieu.lieu=newLieuUpdate.value" value="{{lieu.lieu}}"/>
+                    </ng-template>
+                </p-inplace>
+                </td>
             @if(rowIndex == 0) {
             <td></td>
-            <td></td>
             }@else{
-            <td><span class="pointer pi pi-file-edit"></span></td>
-            <td><span class="pointer pi pi-trash" (click)="delete(product)"></span></td>
+            <td><span class="pointer pi pi-trash" (click)="delete(lieu)"></span></td>
             }
+            <td></td>
 
         </tr>
     </ng-template>
 </p-table>
+<p-overlayPanel #op>
+    Nouveau lieu:<br>
+    <input #inputNewlieu type="text"/><p-button label="Save" (click)="add(inputNewlieu.value)"></p-button>
+</p-overlayPanel>
+<p-toast></p-toast>

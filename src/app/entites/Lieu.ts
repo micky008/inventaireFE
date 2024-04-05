@@ -1,4 +1,4 @@
 export class Lieu {
-    uuid: string = "";
+    uuid: string | null = null;
     lieu: string = "";
 }
