@@ -18,11 +18,9 @@ import { LieuService } from '../services/lieu.service';
   styleUrl: './lieu.component.css'
 })
 export class LieuComponent implements OnInit {
-  lieux!: Lieu[];
-  create: boolean = false;
-
+  lieux: Lieu[] = [];
+  
   constructor(private lieuService: LieuService, private messageService: MessageService) { }
-
 
   ngOnInit(): void {
     this.lieuService.getAll().then(lieux => this.lieux = lieux);
@@ -34,7 +32,6 @@ export class LieuComponent implements OnInit {
       this.lieux.splice(index, 1);
     });
   }
-
 
   add(newLieu: string) {
     let lieu: Lieu = new Lieu();

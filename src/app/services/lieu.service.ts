@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Lieu } from '../entites/Lieu';
 import { lastValueFrom } from 'rxjs';
@@ -8,6 +8,8 @@ import { lastValueFrom } from 'rxjs';
 })
 export class LieuService {
 
+  public lieuInstance = signal<Lieu>(new Lieu());
+
   constructor(private http: HttpClient) {
 
   }
@@ -15,7 +17,6 @@ export class LieuService {
   public getAll(): Promise<Lieu[]> {
     return lastValueFrom(this.http.get<Lieu[]>("api/lieu"));
   }
-
 
   public insert(lieu: Lieu): Promise<Lieu> {
     return lastValueFrom(this.http.put<Lieu>("api/lieu", lieu));

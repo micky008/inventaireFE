@@ -1,4 +1,4 @@
-<p-table [value]="lieux" styleClass="p-datatable-striped">
+<p-table [value]="pieces" styleClass="p-datatable-striped">
     <ng-template pTemplate="header">
         <tr>
             <th>Nom</th>
@@ -6,23 +6,23 @@
             <th><p-button icon="pi pi-plus" label="Ajouter" (click)="op.toggle($event)"></p-button></th>
         </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-lieu let-rowIndex="rowIndex">
+    <ng-template pTemplate="body" let-piece let-rowIndex="rowIndex">
         <tr>
             <td>
-                <p-inplace [closable]="true" closeIcon="pi pi-save" (onDeactivate)="update(lieu)" [disabled]="lieu.uuid == '00000000-0000-0000-0000-000000000001'">
+                <p-inplace [closable]="true" closeIcon="pi pi-save" (onDeactivate)="update(piece)" [disabled]="piece.uuid == '00000000-0000-0000-0000-000000000001'">
                     <ng-template pTemplate="display">
-                        <span pTooltip="Click pour editer">{{lieu.lieu}}</span>
+                        <span pTooltip="Click pour editer">{{piece.nom}}</span>
                     </ng-template>
                     <ng-template pTemplate="content">
-                        <input #newLieuUpdate type="text" (change)="lieu.lieu=newLieuUpdate.value"
-                            value="{{lieu.lieu}}" />
+                        <input #newLieuUpdate type="text" (change)="piece.nom=newLieuUpdate.value"
+                            value="{{piece.nom}}" />
                     </ng-template>
                 </p-inplace>
             </td>
-            @if(lieu.uuid == '00000000-0000-0000-0000-000000000001') {
+            @if(piece.uuid == '00000000-0000-0000-0000-000000000001') {
             <td></td>
             }@else{
-            <td><span class="pointer pi pi-trash" (click)="delete(lieu)"></span></td>
+            <td><span class="pointer pi pi-trash" (click)="delete(piece)"></span></td>
             }
             <td></td> <!--c'est pour la colonne "Ajouter"-->
         </tr>

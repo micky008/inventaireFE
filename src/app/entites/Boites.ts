@@ -1,8 +1,8 @@
-import { Lieu } from "./Lieu";
+import { Piece } from "./Piece";
 
 export class Boite {
     uuid: string | null = null;
     nom: string = "";
-    lieu: Lieu = new Lieu();
+    piece: Piece = new Piece();
     note: string | null = null;
 }
