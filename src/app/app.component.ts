@@ -2,29 +2,24 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
 import { MenuModule } from 'primeng/menu';
 import { SidebarModule } from 'primeng/sidebar';
-import { Lieu } from './entites/Lieu';
-import { LieuService } from './services/lieu.service';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ButtonModule, SidebarModule, MenuModule, DropdownModule],
+  imports: [RouterOutlet, ButtonModule, SidebarModule, MenuModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
   showBurgerMenu: boolean = false;
   items: MenuItem[] | undefined;
-  lieux:Lieu[] = [];
 
-  constructor(private lieuService:LieuService){}
+  constructor(){}
 
-  ngOnInit() {
-    this.lieuService.getAll().then(lieux => this.lieux = lieux);
+  ngOnInit() {    
     this.items = [
       {
         label: "Racourcies",
@@ -84,10 +79,6 @@ export class AppComponent implements OnInit {
         ]
       }
     ];
-  }
-
-  changeLieu(newLieu:Lieu){
-    this.lieuService.lieuInstance.set(newLieu);
   }
 
 }

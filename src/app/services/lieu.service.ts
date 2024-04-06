@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Lieu } from '../entites/Lieu';
 import { lastValueFrom } from 'rxjs';
@@ -8,7 +8,7 @@ import { lastValueFrom } from 'rxjs';
 })
 export class LieuService {
 
-  public lieuInstance = signal<Lieu>(new Lieu());
+  public lieuInstance: WritableSignal<Lieu> = signal<Lieu>(new Lieu());
 
   constructor(private http: HttpClient) {
 
@@ -26,8 +26,8 @@ export class LieuService {
     return lastValueFrom(this.http.post<Lieu>("api/lieu", lieu));
   }
 
-  public delete(lieu: Lieu):  Promise<Lieu> {
-    return lastValueFrom(this.http.delete<Lieu>("api/lieu/"+lieu.uuid));
+  public delete(lieu: Lieu): Promise<Lieu> {
+    return lastValueFrom(this.http.delete<Lieu>("api/lieu/" + lieu.uuid));
   }
 
 }

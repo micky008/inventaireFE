@@ -1,9 +1,12 @@
 <p-table [value]="pieces" styleClass="p-datatable-striped">
+    <ng-template pTemplate="caption">
+        <p-dropdown [options]="lieux" optionLabel="lieu" placeholder="Selectionner un lieu" (onChange)="changeLieu($event.value)"></p-dropdown>
+    </ng-template>
     <ng-template pTemplate="header">
         <tr>
             <th>Nom</th>
             <th>Delete</th>
-            <th><p-button icon="pi pi-plus" label="Ajouter" (click)="op.toggle($event)"></p-button></th>
+            <th><p-button icon="pi pi-plus" label="Ajouter" (click)="op.toggle($event)" [disabled]="lieuService.lieuInstance().uuid == null"></p-button></th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-piece let-rowIndex="rowIndex">
@@ -14,8 +17,7 @@
                         <span pTooltip="Click pour editer">{{piece.nom}}</span>
                     </ng-template>
                     <ng-template pTemplate="content">
-                        <input #newLieuUpdate type="text" (change)="piece.nom=newLieuUpdate.value"
-                            value="{{piece.nom}}" />
+                        <input #newLieuUpdate type="text" (change)="piece.nom=newLieuUpdate.value" value="{{piece.nom}}" />
                     </ng-template>
                 </p-inplace>
             </td>
@@ -29,7 +31,7 @@
     </ng-template>
 </p-table>
 <p-overlayPanel #op>
-    Nouveau lieu:<br>
-    <input #inputNewlieu type="text" /><p-button label="Save" (click)="add(inputNewlieu.value)"></p-button>
+    Nouvelle piece:<br>
+    <input #inputNewPiece type="text" /><p-button label="Save" (click)="add(inputNewPiece.value)"></p-button>
 </p-overlayPanel>
 <p-toast></p-toast>

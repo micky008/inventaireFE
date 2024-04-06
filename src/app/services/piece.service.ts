@@ -18,9 +18,11 @@ export class PieceService {
   }
 
   public getAllByLieu(lieu: Lieu): Promise<Piece[]> {
+    if (lieu.uuid == null) {
+      return Promise.resolve([]);
+    }
     return lastValueFrom(this.http.get<Piece[]>("api/piece/lieu/" + lieu.uuid));
   }
-
 
   public insert(piece: Piece): Promise<Piece> {
     return lastValueFrom(this.http.put<Piece>("api/piece", piece));
