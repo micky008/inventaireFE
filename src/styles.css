@@ -2,3 +2,8 @@
 .pointer {
     cursor: pointer;
 }
+
+.myvisu .p-dropdown-panel {
+    z-index: 9999;
+    position: fixed;
+}

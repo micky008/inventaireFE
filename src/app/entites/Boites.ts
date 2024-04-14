@@ -5,4 +5,6 @@ export class Boite {
     nom: string = "";
     piece: Piece = new Piece();
     note: string | null = null;
+    boites: Boite[] = [];
+    rootBoite:boolean = true;
 }

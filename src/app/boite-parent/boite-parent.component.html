@@ -1,0 +1,3 @@
+<p-dropdown [options]="lieux" optionLabel="lieu" placeholder="Selectionner un lieu" (onChange)="changeLieu($event.value)"></p-dropdown>
+<p-dropdown [options]="pieces" optionLabel="nom" placeholder="Selectionner une piece" (onChange)="changePiece($event.value)"></p-dropdown>
+<app-boite [lieux]="lieux" [boites]="boites" [canAdd]="selectedPiece() != null"></app-boite>

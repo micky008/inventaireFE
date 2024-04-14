@@ -4,7 +4,7 @@ import { RechercheComponent } from './recherche/recherche.component';
 export const routes: Routes = [
     { path: 'lieu', loadComponent: () => import('./lieu/lieu.component').then((x) => x.LieuComponent) },
     { path: 'piece', loadComponent: () => import('./piece/piece.component').then((x) => x.PieceComponent) },
-    { path: 'boite', loadComponent: () => import('./boite/boite.component').then((x) => x.BoiteComponent) },
+    { path: 'boite', loadComponent: () => import('./boite-parent/boite-parent.component').then((x) => x.BoiteParentComponent) },
     { path: 'stuff', loadComponent: () => import('./stuff/stuff.component').then((x) => x.StuffComponent) },
     { path: '', component: RechercheComponent },
     { path: 'recherche', component: RechercheComponent },

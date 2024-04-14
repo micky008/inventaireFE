@@ -1,37 +1,48 @@
-<p-table [value]="boites" >
-    <ng-template pTemplate="caption">
-        <p-dropdown [options]="lieux" optionLabel="lieu" placeholder="Selectionner un lieu" (onChange)="changeLieu($event.value)"></p-dropdown>
-        <p-dropdown [options]="pieces" optionLabel="nom" placeholder="Selectionner une piece" (onChange)="changePiece($event.value)"></p-dropdown>
-    </ng-template>
+<p-table [value]="boites" dataKey="uuid">
     <ng-template pTemplate="header">
         <tr>
+            <th style="width: 5rem"></th>
             <th>Nom</th>
             <th>Note</th>
+            @if(!inChild){
+            <th>Enfant</th>
+            }
             <th>Transfer</th>
             <th>Delete</th>
             <th>Sauvegrder</th>
-            <th><p-button icon="pi pi-plus" label="Ajouter" (click)="op.toggle($event)" [disabled]="selectedPiece == null"></p-button></th>
+            <th><p-button icon="pi pi-plus" label="Ajouter" (click)="addBoite()" [disabled]="!canAdd"></p-button>            
+            </th>
         </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-boite let-rowIndex="rowIndex">
+    <ng-template pTemplate="body" let-boite let-rowIndex="rowIndex" let-expanded="expanded">
         <tr>
+            @if(boite.boites && boite.boites.length > 0) {
+            <td>
+                <button type="button" pButton pRipple [pRowToggler]="boite"
+                    class="p-button-text p-button-rounded p-button-plain"
+                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+            </td>
+            }@else{
+            <td></td>
+            }
             <td><!--Debut de Nom-->
-                <p-inplace [closable]="true" closeIcon="pi pi-save" (onDeactivate)="update(boite)" [disabled]="boite.uuid == '00000000-0000-0000-0000-000000000001'">
-                    <ng-template pTemplate="display">
-                        <span pTooltip="Click pour editer">{{boite.nom}}</span>
-                    </ng-template>
-                    <ng-template pTemplate="content">
-                        <input #newLieuUpdate type="text" (change)="boite.nom=newLieuUpdate.value"
-                            value="{{boite.nom}}" />
-                    </ng-template>
-                </p-inplace>
+                <input #newLieuUpdate type="text" [disabled]="boite.uuid == '00000000-0000-0000-0000-000000000001'">
+                (change)="boite.nom=newLieuUpdate.value"
+                value="{{boite.nom}}" />
             </td><!--fin de Nom-->
             <td><!--Debut de Note-->
                 <textarea pInputTextarea [(ngModel)]="boite.note"></textarea>
             </td> <!--Fin de Note-->
+            @if(!inChild){
+            <td><p-button icon="pi pi-plus" label="Ajouter" (click)="add" [disabled]="!canAdd"></p-button>
+            </td>
+            }
             @if(boite.uuid == '00000000-0000-0000-0000-000000000001') {
             <td></td> <!--Debut/Fin de Transfer-->
-            <td></td> <!--Debut/fin de delete-->            
+            <td></td> <!--Debut/fin de delete-->
+            }@else{
+            @if(inChild){
+            <td><p-button></p-button></td>
             }@else{
             <td><!--Debut de Transfer-->
                 <p-inplace [closable]="true" [disabled]="boite.uuid == '00000000-0000-0000-0000-000000000001'">
@@ -39,19 +50,27 @@
                         <span class="pointeur pi pi-file-export"> </span>
                     </ng-template>
                     <ng-template pTemplate="content">
-                        <p-dropdown [options]="lieux" optionLabel="lieu" placeholder="Selectionner un lieu" (onChange)="changeLieuTransfer($event.value)"></p-dropdown>
-                        <p-dropdown [options]="piecesTransfer" optionLabel="nom" placeholder="Selectionner une piece" (onChange)="boite.piece=$event.value"></p-dropdown>
+                        <p-dropdown [options]="lieux" optionLabel="lieu" placeholder="Selectionner un lieu"
+                            (onChange)="changeLieuTransfer($event.value)" styleClass="myvisu"></p-dropdown>
+                        <p-dropdown [options]="piecesTransfer" optionLabel="nom" placeholder="Selectionner une piece"
+                            (onChange)="boite.piece=$event.value" styleClass="myvisu"></p-dropdown>
                     </ng-template>
                 </p-inplace>
             </td> <!--fin de Transfer-->
-            <td><span class="pointer pi pi-trash" (click)="delete(boite)"></span></td> <!--Debut/fin de delete-->            }
-            <td><span class="pointer pi pi-save" (click)="globalSave(boite)"></span></td> <!--c'est pour la colonne "Sauvegarder"-->
+            }
+            <td><span class="pointer pi pi-trash" (click)="delete(boite)"></span></td> <!--Debut/fin de delete--> }
+            <td><span class="pointer pi pi-save" (click)="globalSave(boite)"></span></td>
+            <!--c'est pour la colonne "Sauvegarder"-->
             <td></td> <!--c'est pour la colonne "Ajouter"-->
         </tr>
     </ng-template>
+    <ng-template pTemplate="rowexpansion" let-boite>
+        <tr>
+            <td colspan="7">
+                <app-boite [parentBoite]="boite" [boites]="boite.boites" [lieux]="lieux" [canAdd]="true"
+                    [inChild]="true"></app-boite>
+            </td>
+        </tr>
+    </ng-template>
 </p-table>
-<p-overlayPanel #op>
-    Nouvelle Boite:<br>
-    <input #inputNewBoite type="text" /><p-button label="Save" (click)="add(inputNewBoite.value)"></p-button>
-</p-overlayPanel>
 <p-toast></p-toast>

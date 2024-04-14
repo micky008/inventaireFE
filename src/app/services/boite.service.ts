@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, WritableSignal } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { Piece } from '../entites/Piece';
 import { Boite } from '../entites/Boites';
@@ -8,6 +8,7 @@ import { Boite } from '../entites/Boites';
   providedIn: 'root'
 })
 export class BoiteService {
+
 
   constructor(private http: HttpClient) {
 
@@ -21,12 +22,16 @@ export class BoiteService {
     return lastValueFrom(this.http.get<Boite[]>("api/boite/" + piece.uuid));
   }
 
-  public insert(Boite: Boite): Promise<Boite> {
-    return lastValueFrom(this.http.put<Boite>("api/boite", Boite));
+  public insertRootBoite(boite: Boite, piece: Piece): Promise<Boite> {
+    return lastValueFrom(this.http.put<Boite>("api/boite/" + piece.uuid, boite));
   }
 
-  public update(Boite: Boite): Promise<Boite> {
-    return lastValueFrom(this.http.post<Boite>("api/boite", Boite));
+  public insertChildBoite(boite: Boite, boiteParent: Boite): Promise<Boite> {
+    return lastValueFrom(this.http.put<Boite>(`api/boite/${boiteParent.uuid}/child`, boite));
+  }
+
+  public update(boite: Boite): Promise<Boite> {
+    return lastValueFrom(this.http.post<Boite>("api/boite", boite));
   }
 
   public delete(boite: Boite): Promise<Boite> {

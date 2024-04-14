@@ -1,4 +1,4 @@
-import { Component, OnInit, effect } from '@angular/core';
+import { Component, Input, OnInit, effect } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
@@ -24,13 +24,15 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './boite.component.html',
   styleUrl: './boite.component.css'
 })
-export class BoiteComponent implements OnInit {
+export class BoiteComponent {
 
-  boites: Boite[] = [];
-  pieces: Piece[] = [];
-  lieux: Lieu[] = [];
+  @Input({ required: true }) boites: Boite[] = [];
+  @Input({ required: true }) lieux: Lieu[] = [];
   piecesTransfer: Piece[] = [];
-  selectedPiece: Piece | null = null;
+  @Input() canAdd: boolean = false;
+  @Input() inChild: boolean = false;
+  @Input() parentBoite: Boite = new Boite();
+
 
   constructor(private lieuService: LieuService,
     private messageService: MessageService,
@@ -38,20 +40,6 @@ export class BoiteComponent implements OnInit {
     private pieceService: PieceService) {
   }
 
-  ngOnInit(): void {
-    this.lieuService.getAll().then(newlieux => this.lieux = newlieux);
-  }
-
-  changeLieu(newLieu: Lieu) {
-    this.selectedPiece = null;
-    this.boites = [];
-    this.pieceService.getAllByLieu(newLieu).then(newpieces => this.pieces = newpieces);
-  }
-
-  changePiece(newPiece: Piece) {
-    this.selectedPiece = newPiece;
-    this.boiteService.getAllByPiece(newPiece).then(allBoites => this.boites = allBoites);
-  }
 
   delete(boite: Boite) {
     this.boiteService.delete(boite).then(oldBoite => {
@@ -60,22 +48,37 @@ export class BoiteComponent implements OnInit {
     });
   }
 
-  add(newBoite: string) {
-    let boite: Boite = new Boite();
-    boite.nom = newBoite;
-    if (this.selectedPiece != null) {
-      boite.piece = this.selectedPiece;
+  addBoite() {
+    if (this.inChild) {
+      this.parentBoite.boites.push(new Boite());
+    } else {
+      this.boites.push(new Boite());
     }
-    this.boiteService.insert(boite).then(np => {
-      this.boites.push(np);
-      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Nouvelle Boite créée' });
-    })
   }
 
-  update(newBoite: Boite) {
-    this.boiteService.update(newBoite).then(nl => {
-      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Modification prise en compte' });
-    })
+  add(newBoite: string) {
+    if (this.pieceService.piece().uuid == null) {
+      return;
+    }
+    let boite: Boite = new Boite();
+    boite.nom = newBoite;
+    boite.piece = this.pieceService.piece();
+    this.canAdd = true;
+    if (this.inChild) {
+      boite.rootBoite = false;
+    }
+    if (this.inChild) {
+      this.boiteService.insertChildBoite(boite, this.parentBoite).then(np => {
+        this.boites.push(np);
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Nouvelle Boite créée' });
+      });
+    } else {
+      this.boiteService.insertRootBoite(boite, this.pieceService.piece()).then(np => {
+        this.boites.push(np);
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Nouvelle Boite créée' });
+      });
+    }
+
   }
 
   changeLieuTransfer(newLieu: Lieu) {

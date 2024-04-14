@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { Piece } from '../entites/Piece';
 import { Lieu } from '../entites/Lieu';
@@ -8,6 +8,9 @@ import { Lieu } from '../entites/Lieu';
   providedIn: 'root'
 })
 export class PieceService {
+
+  piece:WritableSignal<Piece> = signal<Piece>(new Piece());
+
 
   constructor(private http: HttpClient) {
 
