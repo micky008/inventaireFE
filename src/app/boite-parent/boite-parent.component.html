@@ -1,3 +1,17 @@
-<p-dropdown [options]="lieux" optionLabel="lieu" placeholder="Selectionner un lieu" (onChange)="changeLieu($event.value)"></p-dropdown>
-<p-dropdown [options]="pieces" optionLabel="nom" placeholder="Selectionner une piece" (onChange)="changePiece($event.value)"></p-dropdown>
-<app-boite [lieux]="lieux" [boites]="boites" [canAdd]="selectedPiece() != null"></app-boite>
+<p-dropdown [options]="lieux" optionLabel="lieu" placeholder="Selectionner un lieu"
+    (onChange)="changeLieu($event.value)"></p-dropdown>
+<p-dropdown [options]="pieces" optionLabel="nom" placeholder="Selectionner une piece"
+    (onChange)="changePiece($event.value)"></p-dropdown>
+<p-organizationChart [value]="boites">
+    <ng-template let-node pTemplate="default">
+        <div class="myflex">
+            <div class="p-2">{{ node.label }}</div>
+            <div class="cont">
+                @if(node.data.uuid != '00000000-0000-0000-0000-000000000001') {
+                <span class="pointer pi pi-plus" (click)="addBoite(node.data)"></span>
+                <span class="pointer pi pi-trash" style="margin-left: 50%;"></span>
+                }
+            </div>
+        </div>
+    </ng-template>
+</p-organizationChart>
