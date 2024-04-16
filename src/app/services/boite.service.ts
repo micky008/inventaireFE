@@ -15,7 +15,7 @@ export class BoiteService {
   }
 
   public getAll(): Promise<Boite[]> {
-    return lastValueFrom(this.http.get<Boite[]>("api/Boite"));
+    return lastValueFrom(this.http.get<Boite[]>("api/boite"));
   }
 
   public getAllByPiece(piece: Piece): Promise<Boite[]> {
