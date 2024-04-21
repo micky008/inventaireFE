@@ -1,27 +1,44 @@
-<p-dropdown [options]="lieux" optionLabel="lieu" placeholder="Selectionner un lieu"
-    (onChange)="changeLieu($event.value)"></p-dropdown>
-<p-dropdown [options]="pieces" optionLabel="nom" placeholder="Selectionner une piece"
-    (onChange)="changePiece($event.value)"></p-dropdown>
+<p-dropdown
+  [options]="lieux"
+  optionLabel="lieu"
+  placeholder="Selectionner un lieu"
+  (onChange)="changeLieu($event.value)"
+></p-dropdown>
+<p-dropdown
+  [options]="pieces"
+  optionLabel="nom"
+  placeholder="Selectionner une piece"
+  (onChange)="changePiece($event.value)"
+></p-dropdown>
 <p-organizationChart [value]="boites">
-    <ng-template let-node pTemplate="default">
-        @if(node.data.uuid.startsWith('newTn')){
-        <div class="myflex">
-            <div class="p-2"><input #newBoite type="text" (change)="node.label = newBoite.value"></div>
-            <div class="cont">
-                <span class="pointer pi pi-save" (click)="saveNode(node)"></span>
-                <span class="pointer pi pi-trash" style="margin-left: 50%;" (click)="deleteNewTreeNode(node)" ></span>
-            </div>
-        </div>
-        }@else{
-        <div class="myflex">
-            <div class="p-2">{{ node.label }}</div>
-            <div class="cont">
-                <span class="pointer pi pi-plus" (click)="addBoite(node.data)"></span>
-                @if(node.data.uuid != '00000000-0000-0000-0000-000000000001') {
-                <span class="pointer pi pi-trash" style="margin-left: 50%;" (click)="deleteBoiteByTreeNode(node)" pTooltip="Les enfants serront supprimés"></span>
-                }
-            </div>
-        </div>
+  <ng-template let-node pTemplate="default">
+    @if(node.data.uuid.startsWith('newTn')){
+    <div class="myflex">
+      <div class="p-2">
+        <input #newBoite type="text" (change)="node.label = newBoite.value" />
+      </div>
+      <div class="cont">
+        <span class="pointer pi pi-save" (click)="saveNode(node)"></span>
+        <span
+          class="pointer pi pi-trash"
+          (click)="deleteNewTreeNode(node)"
+        ></span>
+      </div>
+    </div>
+    }@else{
+    <div class="myflex">
+      <div class="p-2">{{ node.label }}</div>
+      <div class="cont">
+        <span class="pointer pi pi-plus" (click)="addBoite(node.data)"></span>
+        @if(node.data.uuid != '00000000-0000-0000-0000-000000000001') {
+        <span
+          class="pointer pi pi-trash"
+          (click)="deleteBoiteByTreeNode(node)"
+          pTooltip="Les enfants seront supprimés"
+        ></span>
         }
-    </ng-template>
+      </div>
+    </div>
+    }
+  </ng-template>
 </p-organizationChart>

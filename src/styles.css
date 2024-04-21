@@ -1,16 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 .pointer {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .myvisu .p-dropdown-panel {
-    z-index: 9999;
-    position: fixed;
-}
-
-.myFlex {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-content: space-between;
+  z-index: 9999;
+  position: fixed;
 }
