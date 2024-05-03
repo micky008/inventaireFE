@@ -53,7 +53,7 @@
       <td><p-dropdown #dp2 [options]="movePieces" optionLabel="nom" placeholder="Selectionner une piece"
           (onChange)="changePiece($event.value, true)"></p-dropdown></td>
       <td><p-dropdown #dp3 [options]="moveBoites" optionLabel="nom" placeholder="Selectionner une boite"></p-dropdown></td>
-      <td><p-button icon="pi pi-check" [rounded]="true" [text]="true" [raised]="true" (onClick)="moveBoite(dp3.value)"></p-button></td>
+      <td><p-button icon="pi pi-check" [rounded]="true" [text]="true" [raised]="true" [disabled]="dp2.value == null"   (onClick)="moveBoite(dp2.value, dp3.value);op.hide()"></p-button></td>
     </tr>
   </table>
 </p-overlayPanel>

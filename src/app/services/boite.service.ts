@@ -34,7 +34,7 @@ export class BoiteService {
     return lastValueFrom(this.http.put<Boite>(`api/boite/${boiteParent.uuid}/child`, boite));
   }
 
-  public updateParentAndNote(boite: Boite): Promise<Boite> {
+  public updatePieceAndNote(boite: Boite): Promise<Boite> {
     return lastValueFrom(this.http.post<Boite>("api/boite", boite));
   }
 

@@ -66,12 +66,18 @@ export class BoiteParentComponent implements OnInit {
   }
 
   changePiece(newPiece: Piece, subPiece: boolean = false) {
+    if (newPiece == null) {
+      return;
+    }
     if (subPiece) {
+      this.moveBoites = [];
       this.boiteService.getAllByPiece(newPiece).then((allBoites: Boite[]) => {
-        this.moveBoites = allBoites.filter(b => b.uuid != this.selectedBoite.uuid);
+        let parent: Boite | null = this.findUuidBoiteParentInTreenode(this.boites[0], this.selectedBoite.uuid as string)?.data;
+        this.moveBoites = allBoites.filter(b => b.uuid != this.selectedBoite.uuid || (parent != null && parent.uuid == b.uuid ));
       });
       return;
     }
+    this.boites = [];
     this.pieceService.piece.set(newPiece);
     this.boiteService.getAllRootByPiece(newPiece).then((allBoites: Boite[]) => {
       let cloneNewpiece = { ...newPiece };
@@ -170,6 +176,7 @@ export class BoiteParentComponent implements OnInit {
     return null;
   }
 
+
   saveNode(newTreeNode: TreeNode) {
     let newBoite = new Boite();
     newBoite.nom = newTreeNode.label as string;
@@ -209,12 +216,25 @@ export class BoiteParentComponent implements OnInit {
   }
 
   save() {
-    this.boiteService.updateParentAndNote(this.selectedBoite).then(b => {
+    this.boiteService.updatePieceAndNote(this.selectedBoite).then(b => {
       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Boite MaJ !' })
     });
   }
 
-  moveBoite(newParentBoite: Boite) {
+  moveBoite(newPiece: Piece, newParentBoite: Boite) {
+    if (newPiece == null) {
+      return;
+    }
+    if (newParentBoite == null) {
+      let boite = { ...this.selectedBoite };
+      boite.piece = newPiece;
+      this.boiteService.updatePieceAndNote(boite).then(nb => {
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'La boite a bougé !' });
+        this.boites = [];
+        this.changePiece(this.selectedPiece());
+      });
+      return;
+    }
     this.boiteService.changeParentBoite(this.selectedBoite, newParentBoite).then(b => {
       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'La boite a bougé !' });
       this.boites = [];
