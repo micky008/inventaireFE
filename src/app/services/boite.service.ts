@@ -18,8 +18,12 @@ export class BoiteService {
     return lastValueFrom(this.http.get<Boite[]>("api/boite"));
   }
 
-  public getAllByPiece(piece: Piece): Promise<Boite[]> {
+  public getAllRootByPiece(piece: Piece): Promise<Boite[]> {
     return lastValueFrom(this.http.get<Boite[]>("api/boite/" + piece.uuid));
+  }
+
+  public getAllByPiece(piece: Piece): Promise<Boite[]> {
+    return lastValueFrom(this.http.get<Boite[]>("api/boite/" + piece.uuid+"/noRoot"));
   }
 
   public insertRootBoite(boite: Boite, piece: Piece): Promise<Boite> {
@@ -30,12 +34,16 @@ export class BoiteService {
     return lastValueFrom(this.http.put<Boite>(`api/boite/${boiteParent.uuid}/child`, boite));
   }
 
-  public update(boite: Boite): Promise<Boite> {
+  public updateParentAndNote(boite: Boite): Promise<Boite> {
     return lastValueFrom(this.http.post<Boite>("api/boite", boite));
   }
 
   public delete(boite: Boite): Promise<Boite> {
     return lastValueFrom(this.http.delete<Boite>("api/boite/" + boite.uuid));
+  }
+
+  public changeParentBoite(boite: Boite, newBoiteParent: Boite): Promise<boolean> {
+    return lastValueFrom(this.http.post<boolean>("api/boite/" + newBoiteParent.uuid, boite));
   }
 
 }

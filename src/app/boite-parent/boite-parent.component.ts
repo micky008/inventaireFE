@@ -1,28 +1,29 @@
-import { Component, Input, OnInit, WritableSignal, effect } from '@angular/core';
+import { Component, OnInit, WritableSignal } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { QRCodeModule } from 'angularx-qrcode';
 import { MessageService, TreeNode } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
-import { InplaceModule } from 'primeng/inplace';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { OrganizationChartModule } from 'primeng/organizationchart';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { TableModule } from 'primeng/table';
+import { SidebarModule } from 'primeng/sidebar';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { Boite } from '../entites/Boites';
+import { Lieu } from '../entites/Lieu';
+import { Piece } from '../entites/Piece';
 import { BoiteService } from '../services/boite.service';
 import { LieuService } from '../services/lieu.service';
 import { PieceService } from '../services/piece.service';
-import { Piece } from '../entites/Piece';
-import { Lieu } from '../entites/Lieu';
-import { InputTextareaModule } from 'primeng/inputtextarea';
-import { FormsModule } from '@angular/forms';
-import { OrganizationChartModule } from 'primeng/organizationchart';
 import { UUIDService } from '../services/uuid.service';
 
 
 @Component({
   selector: 'app-boite-parent',
   standalone: true,
-  imports: [ButtonModule, InplaceModule, OverlayPanelModule, TableModule, ToastModule, TooltipModule, DropdownModule, InputTextareaModule, FormsModule, OrganizationChartModule],
+  imports: [OverlayPanelModule, ToastModule, InputTextareaModule, SidebarModule, ButtonModule, TooltipModule, DropdownModule, OrganizationChartModule, QRCodeModule, RouterModule],
+  providers: [MessageService],
   templateUrl: './boite-parent.component.html',
   styleUrl: './boite-parent.component.css'
 })
@@ -33,11 +34,16 @@ export class BoiteParentComponent implements OnInit {
   pieces: Piece[] = [];
   selectedPiece: WritableSignal<Piece>;
   parentBoite: Boite = new Boite();
+  sidebarVisible: boolean = false;
+  selectedBoite: Boite = new Boite();
+  movePieces: Piece[] = [];
+  moveBoites: Boite[] = [];
 
   constructor(private lieuService: LieuService,
     private boiteService: BoiteService,
     private pieceService: PieceService,
-    private uuidService: UUIDService
+    private uuidService: UUIDService,
+    private messageService: MessageService
   ) {
     this.selectedPiece = this.pieceService.piece;
   }
@@ -46,20 +52,35 @@ export class BoiteParentComponent implements OnInit {
     this.lieuService.getAll().then(newLieux => this.lieux = newLieux);
   }
 
-  changeLieu(newLieu: Lieu) {
-    this.boites = [];
-    this.pieceService.getAllByLieu(newLieu).then(newpieces => this.pieces = newpieces);
+  changeLieu(newLieu: Lieu, principal: boolean = true) {
+    if (principal) {
+      this.boites = [];
+    }
+    this.pieceService.getAllByLieu(newLieu).then(newpieces => {
+      if (principal) {
+        this.pieces = newpieces;
+      } else {
+        this.movePieces = newpieces;
+      }
+    });
   }
 
-  changePiece(newPiece: Piece) {
+  changePiece(newPiece: Piece, subPiece: boolean = false) {
+    if (subPiece) {
+      this.boiteService.getAllByPiece(newPiece).then((allBoites: Boite[]) => {
+        this.moveBoites = allBoites.filter(b => b.uuid != this.selectedBoite.uuid);
+      });
+      return;
+    }
     this.pieceService.piece.set(newPiece);
-    this.boiteService.getAllByPiece(newPiece).then((allBoites: Boite[]) => {
+    this.boiteService.getAllRootByPiece(newPiece).then((allBoites: Boite[]) => {
       let cloneNewpiece = { ...newPiece };
       cloneNewpiece.uuid = '00000000-0000-0000-0000-000000000001';
       let tn: TreeNode = {
         label: newPiece.nom,
         data: cloneNewpiece,
         expanded: true,
+        selectable: false,
         children: []
       }
       for (let boite of allBoites) {
@@ -115,7 +136,6 @@ export class BoiteParentComponent implements OnInit {
     treeNode?.children?.push(tn);
   }
 
-
   private findUuidBoiteInTreenode(treenodeParent: TreeNode, uuidBoite: string): TreeNode | null {
     if (treenodeParent.children == null || treenodeParent.children.length == 0) {
       return null;
@@ -133,6 +153,22 @@ export class BoiteParentComponent implements OnInit {
     return null;
   }
 
+  private findUuidBoiteParentInTreenode(treenodeParent: TreeNode, uuidBoite: string): TreeNode | null {
+    if (treenodeParent.children == null || treenodeParent.children.length == 0) {
+      return null;
+    }
+    let res: TreeNode | null = null;
+    for (let treenode of treenodeParent.children) {
+      if (treenode.data.uuid == uuidBoite) {
+        return treenodeParent;
+      }
+      res = this.findUuidBoiteInTreenode(treenode, uuidBoite);
+      if (res != null) {
+        return res;
+      }
+    }
+    return null;
+  }
 
   saveNode(newTreeNode: TreeNode) {
     let newBoite = new Boite();
@@ -148,16 +184,42 @@ export class BoiteParentComponent implements OnInit {
 
   deleteBoiteByTreeNode(treenode: TreeNode) {
     let pos = treenode.parent?.children?.findIndex((tn) => tn.data.uuid == treenode.data.uuid) as number;
-    
+
     this.boiteService.delete(treenode.data).then(boite => {
       console.log(`boite ${boite.nom} removed`)
-      treenode.parent?.children?.splice(pos,1);
+      treenode.parent?.children?.splice(pos, 1);
     });
   }
 
   deleteNewTreeNode(treenode: TreeNode) {
     let id: number = treenode.parent?.children?.findIndex(tn => tn.data.uuid == treenode.data.uuid) as number;
     treenode.parent?.children?.splice(id, 1);
+  }
+
+  showRightSlideBar(node: TreeNode) {
+    this.sidebarVisible = true;
+    this.selectedBoite = node.data;
+  }
+
+  generateQrCode(uuidBoite: string | null): string {
+    if (!this.sidebarVisible) {
+      return "nothing";
+    }
+    return `${window.location.protocol}//${window.location.host}/api/stuff/${uuidBoite}`;
+  }
+
+  save() {
+    this.boiteService.updateParentAndNote(this.selectedBoite).then(b => {
+      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Boite MaJ !' })
+    });
+  }
+
+  moveBoite(newParentBoite: Boite) {
+    this.boiteService.changeParentBoite(this.selectedBoite, newParentBoite).then(b => {
+      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'La boite a bougé !' });
+      this.boites = [];
+      this.changePiece(this.selectedPiece());
+    });
   }
 
 }
